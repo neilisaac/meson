@@ -1,0 +1,5 @@
+defpackage exe :
+  import core
+
+println("hello world")
+

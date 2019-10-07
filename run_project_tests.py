@@ -115,7 +115,7 @@ def get_relative_files_list_from_dir(fromdir: Path) -> typing.List[Path]:
 def platform_fix_name(fname: str, compiler, env) -> str:
     # canonicalize compiler
     if (compiler in {'clang-cl', 'intel-cl'} or
-       (env.machines.host.is_windows() and compiler == 'pgi')):
+            (env.machines.host.is_windows() and compiler == 'pgi')):
         canonical_compiler = 'msvc'
     else:
         canonical_compiler = compiler
@@ -635,6 +635,7 @@ def detect_tests_to_run(only: typing.List[str]) -> typing.List[typing.Tuple[str,
         ('objective c++', 'objcpp', backend not in (Backend.ninja, Backend.xcode) or not have_objcpp_compiler()),
         ('fortran', 'fortran', skip_fortran or backend != Backend.ninja),
         ('swift', 'swift', backend not in (Backend.ninja, Backend.xcode) or not shutil.which('swiftc')),
+        ('stanza', 'stanza', False),
         ('cuda', 'cuda', backend not in (Backend.ninja, Backend.xcode) or not shutil.which('nvcc')),
         ('python3', 'python3', backend is not Backend.ninja),
         ('python', 'python', backend is not Backend.ninja),
