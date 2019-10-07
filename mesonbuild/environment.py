@@ -58,6 +58,7 @@ from .linkers import (
     XildLinuxDynamicLinker,
     XilinkDynamicLinker,
     CudaLinker,
+    StanzaLinker,
 )
 from functools import lru_cache
 from .compilers import (
@@ -590,6 +591,7 @@ class Environment:
         self.default_cuda = ['nvcc']
         self.default_rust = ['rustc']
         self.default_swift = ['swiftc']
+        self.default_stanza = ['stanza']
         self.default_vala = ['valac']
         self.default_static_linker = ['ar', 'gar']
         self.default_strip = ['strip']
@@ -1375,6 +1377,30 @@ class Environment:
 
         raise EnvironmentException('Unknown compiler "' + ' '.join(exelist) + '"')
 
+    def detect_stanza_compiler(self, for_machine):
+        if not self.machines.matches_build_machine(for_machine):
+            raise EnvironmentException('cross-compiling not supported for Stanza language')
+
+        exelist = self.binaries.host.lookup_entry('stanza')
+        if exelist is None:
+            exelist = self.default_stanza
+
+        issues = []
+        for exe in exelist:
+            cmd = [exe, 'version']
+            try:
+                _, out, _ = Popen_safe(cmd)
+            except OSError as ex:
+                issues.append('Could not execute `{}`: {}'.format(' '.join(cmd), ex))
+                continue
+
+            version = search_version(out)
+            linker = StanzaLinker([exe], for_machine, version)
+            compiler = compilers.StanzaCompiler([exe], version, for_machine, linker=linker)
+            return compiler
+
+        raise EnvironmentException('Could not find Stanza compiler: {}'.format(', '.join(issues)))
+
     def compiler_from_language(self, lang: str, for_machine: MachineChoice):
         if lang == 'c':
             comp = self.detect_c_compiler(for_machine)
@@ -1400,6 +1426,8 @@ class Environment:
             comp = self.detect_fortran_compiler(for_machine)
         elif lang == 'swift':
             comp = self.detect_swift_compiler(for_machine)
+        elif lang == 'stanza':
+            comp = self.detect_stanza_compiler(for_machine)
         else:
             comp = None
         return comp

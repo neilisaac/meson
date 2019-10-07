@@ -38,7 +38,7 @@ about. To support a new compiler, add its information below.
 Also add corresponding autodetection code in environment.py."""
 
 header_suffixes = ('h', 'hh', 'hpp', 'hxx', 'H', 'ipp', 'moc', 'vapi', 'di')
-obj_suffixes = ('o', 'obj', 'res')
+obj_suffixes = ('o', 'obj', 'res', 'pkg')
 lib_suffixes = ('a', 'lib', 'dll', 'dylib', 'so')
 # Mapping of language to suffixes of files that should always be in that language
 # This means we can't include .h headers here since they could be C, C++, ObjC, etc.
@@ -57,6 +57,7 @@ lang_suffixes = {
     'cs': ('cs',),
     'swift': ('swift',),
     'java': ('java',),
+    'stanza': ('stanza'),
 }
 all_languages = lang_suffixes.keys()
 cpp_suffixes = lang_suffixes['cpp'] + ('h',)

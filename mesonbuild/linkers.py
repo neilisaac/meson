@@ -983,3 +983,13 @@ class CudaLinker(DynamicLinker):
 
     def get_std_shared_lib_args(self) -> typing.List[str]:
         return ['-shared']
+
+class StanzaLinker(DynamicLinker):
+    def __init__(self, exelist, for_machine, version):
+        super().__init__(exelist, for_machine=for_machine, id_='stanza', prefix_arg='', version=version)
+
+    def get_output_args(self, outname):
+        return ['-o', outname]
+
+    def get_search_args(self, dirname):
+        return ['-pkg-path', dirname]

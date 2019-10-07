@@ -93,6 +93,7 @@ __all__ = [
     'VisualStudioLikeCompiler',
     'VisualStudioCCompiler',
     'VisualStudioCPPCompiler',
+    'StanzaCompiler',
 ]
 
 # Bring symbols from each module into compilers sub-package namespace
@@ -183,6 +184,7 @@ from .objcpp import (
 from .rust import RustCompiler
 from .swift import SwiftCompiler
 from .vala import ValaCompiler
+from .stanza import StanzaCompiler
 from .mixins.visualstudio import VisualStudioLikeCompiler
 from .mixins.gnu import GnuCompiler
 from .mixins.intel import IntelGnuLikeCompiler, IntelVisualStudioLikeCompiler

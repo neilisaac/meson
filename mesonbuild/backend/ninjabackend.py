@@ -498,6 +498,9 @@ int dummy;
         if 'swift' in target.compilers:
             self.generate_swift_target(target)
             return
+        if 'stanza' in target.compilers:
+            self.generate_stanza_target(target)
+            return
 
         # Now we handle the following languages:
         # ObjC++, ObjC, C++, C, D, Fortran, Vala
@@ -1264,6 +1267,17 @@ int dummy;
         self.create_target_source_introspection(target, valac, args, all_files, [])
         return other_src[0], other_src[1], vala_c_src
 
+    def generate_stanza_target(self, target):
+        stanza = target.compilers['stanza']
+        target_name = os.path.join(target.subdir, target.get_filename())
+        compiler_name = self.get_compiler_rule_name('stanza', target.for_machine)
+        sources = [i.rel_to_builddir(self.build_to_src) for i in target.get_sources()]
+        args = []
+        element = NinjaBuildElement(self.all_outputs, target_name, compiler_name, sources)
+        element.add_item('ARGS', args)
+        self.add_build(element)
+        self.create_target_source_introspection(target, stanza, args, sources, [])
+
     def generate_rust_target(self, target):
         rustc = target.compilers['rust']
         # Rust compiler takes only the main file as input and
@@ -1627,6 +1641,13 @@ int dummy;
         description = 'Compiling Swift source $in.'
         self.add_rule(NinjaRule(rule, command, [], description))
 
+    def generate_stanza_compile_rules(self, compiler):
+        rule = self.compiler_to_rule_name(compiler)
+        invoc = [ninja_quote(i) for i in compiler.get_exelist()]
+        command = invoc + ['$in', '$ARGS'] + compiler.get_output_args('$out')
+        description = 'Compiling Swift source $in.'
+        self.add_rule(NinjaRule(rule, command, [], description))
+
     def generate_fortran_dep_hack(self, crstr):
         rule = 'FORTRAN_DEP_HACK%s' % (crstr)
         if mesonlib.is_windows():
@@ -1667,6 +1688,9 @@ https://gcc.gnu.org/bugzilla/show_bug.cgi?id=47485'''))
         if langname == 'swift':
             if self.environment.machines.matches_build_machine(compiler.for_machine):
                 self.generate_swift_compile_rules(compiler)
+            return
+        if langname == 'stanza':
+            self.generate_stanza_compile_rules(compiler)
             return
         crstr = self.get_rule_suffix(compiler.for_machine)
         if langname == 'fortran':
