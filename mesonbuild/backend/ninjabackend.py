@@ -1645,7 +1645,7 @@ int dummy;
         rule = self.compiler_to_rule_name(compiler)
         invoc = [ninja_quote(i) for i in compiler.get_exelist()]
         command = invoc + ['$in', '$ARGS'] + compiler.get_output_args('$out')
-        description = 'Compiling Swift source $in.'
+        description = 'Compiling Stanza source $in.'
         self.add_rule(NinjaRule(rule, command, [], description))
 
     def generate_fortran_dep_hack(self, crstr):
